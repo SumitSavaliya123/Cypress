@@ -1,0 +1,26 @@
+[
+  {
+    "url": "https://opensource-demo.orangehrmlive.com/",
+    "username": "",
+    "password": "admin123",
+    "expected": "valid"
+  },
+  {
+    "url": "https://opensource-demo.orangehrmlive.com/",
+    "username": "InvalidUser",
+    "password": "",
+    "expected": "invalid"
+  },
+  {
+    "url": "https://opensource-demo.orangehrmlive.com/",
+    "username": "Admin",
+    "password": "WrongPassword123",
+    "expected": "invalid"
+  },
+  {
+    "url": "https://opensource-demo.orangehrmlive.com/",
+    "username": "admin_lowercase",
+    "password": "admin123",
+    "expected": "invalid"
+  }
+]

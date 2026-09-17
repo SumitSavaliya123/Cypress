@@ -1,0 +1,99 @@
+# ──────────────────────────────────────────────────────────────────────────────
+# Cypress E2E CI Pipeline
+# Runs Cypress tests on Chrome, generates Allure reports, and uploads artifacts.
+# ──────────────────────────────────────────────────────────────────────────────
+name: Cypress E2E Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# Cancel in-progress runs for the same branch/PR to save resources
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  cypress-e2e:
+    name: Run Cypress Tests (Chrome)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      # ── Checkout ──────────────────────────────────────────────────────────
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # ── Node.js Setup ────────────────────────────────────────────────────
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      # ── Install Dependencies ─────────────────────────────────────────────
+      - name: Install dependencies
+        run: npm ci
+
+      # ── Cypress System Dependencies ──────────────────────────────────────
+      # Ensures all OS-level libraries Cypress + Chrome need are available
+      - name: Install Cypress binary
+        run: npx cypress install
+
+      - name: Verify Cypress installation
+        run: npx cypress verify
+
+      # ── Run Tests ────────────────────────────────────────────────────────
+      - name: Run Cypress tests
+        uses: cypress-io/github-action@v6
+        with:
+          browser: chrome
+          install: false          # already installed above
+          config: video=true
+        env:
+          # Pass any secrets/env vars tests might need
+          CYPRESS_BASE_URL: https://opensource-demo.orangehrmlive.com
+
+      # ── Allure Report ────────────────────────────────────────────────────
+      - name: Generate Allure report
+        if: always()              # generate even on test failure
+        run: npx allure generate allure-results --clean -o allure-report
+
+      # ── Upload Artifacts ─────────────────────────────────────────────────
+      - name: Upload Cypress screenshots
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cypress-screenshots
+          path: cypress/screenshots/
+          retention-days: 14
+          if-no-files-found: ignore
+
+      - name: Upload Cypress videos
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cypress-videos
+          path: cypress/videos/
+          retention-days: 14
+          if-no-files-found: ignore
+
+      - name: Upload Allure report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-report
+          path: allure-report/
+          retention-days: 30
+          if-no-files-found: ignore
+
+      - name: Upload error logs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: error-logs
+          path: logs/
+          retention-days: 14
+          if-no-files-found: ignore

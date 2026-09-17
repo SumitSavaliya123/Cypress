@@ -1,0 +1,30 @@
+[
+  {
+    "testCaseName": "Save Employee Profile - Indian Nationality Single",
+    "firstName": "Rahul",
+    "middleName": "K",
+    "lastName": "Sharma",
+    "empId": "EMP1001",
+    "otherId": "OTH5001",
+    "licenseNo": "DL998877",
+    "licenseExpiry": "2032-05-15",
+    "dob": "1995-08-20",
+    "gender": "male",
+    "nationality": "Indian",
+    "maritalStatus": "Single"
+  },
+  {
+    "testCaseName": "Save Employee Profile - American Nationality Married",
+    "firstName": "Sarah",
+    "middleName": "J",
+    "lastName": "Miller",
+    "empId": "EMP1002",
+    "otherId": "OTH5002",
+    "licenseNo": "DL445566",
+    "licenseExpiry": "2030-11-10",
+    "dob": "1998-03-12",
+    "gender": "female",
+    "nationality": "American",
+    "maritalStatus": "Married"
+  }
+]
